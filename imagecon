@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert images to multiple formats like JPG, PNG, and WebP. Optimize and compress images for web and mobile with ease.">
+    <meta name="keywords" content="image converter, convert images, image tools, optimize images, web performance">
+    <meta name="author" content="Your Name">
+    <title>Image Converter Tool</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: #2575fc;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-upload {
+            padding: 1rem;
+            background: #2575fc;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background: #1a5bbf;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .options label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input[type="range"] {
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2575fc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2575fc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 1rem;
+            background: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #1a5bbf;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #result {
+            margin-top: 2rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        #convertedImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #downloadLink {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #2575fc;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        #downloadLink:hover {
+            background: #1a5bbf;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            button, .file-upload, #downloadLink {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Converter Tool</h1>
+        <p>Convert images to multiple formats like JPG, PNG, and WebP. Optimize and compress images for web and mobile.</p>
+        
+        <form id="convertForm">
+            <!-- File Upload -->
+            <label for="imageInput" class="file-upload">Choose Image</label>
+            <input type="file" id="imageInput" accept="image/*" required>
+
+            <!-- Format Selection -->
+            <div class="options">
+                <label for="format">Select Format:</label>
+                <select id="format">
+                    <option value="jpg">JPG</option>
+                    <option value="png">PNG</option>
+                    <option value="webp">WebP</option>
+                </select>
+            </div>
+
+            <!-- Compression Level -->
+            <div class="options">
+                <label for="compressionLevel">Compression Level: <span id="compressionValue">50%</span></label>
+                <input type="range" id="compressionLevel" min="1" max="100" value="50">
+            </div>
+
+            <!-- Convert Button -->
+            <button type="submit">Convert Image</button>
+        </form>
+
+        <!-- Result Section -->
+        <div id="result" class="hidden">
+            <h2>Converted Image</h2>
+            <img id="convertedImage" src="" alt="Converted Image">
+            <a id="downloadLink" href="" download="converted_image">Download Converted Image</a>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for Dynamic Functionality
+        document.getElementById('compressionLevel').addEventListener('input', function() {
+            document.getElementById('compressionValue').textContent = this.value + '%';
+        });
+
+        document.getElementById('convertForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const file = document.getElementById('imageInput').files[0];
+            const format = document.getElementById('format').value;
+            const compressionLevel = document.getElementById('compressionLevel').value;
+
+            if (!file) {
+                alert('Please select an image file.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set canvas dimensions
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    // Draw the image on the canvas
+                    ctx.drawImage(img, 0, 0);
+
+                    // Convert and compress the image
+                    let mimeType;
+                    switch (format) {
+                        case 'jpg':
+                            mimeType = 'image/jpeg';
+                            break;
+                        case 'png':
+                            mimeType = 'image/png';
+                            break;
+                        case 'webp':
+                            mimeType = 'image/webp';
+                            break;
+                    }
+
+                    const quality = compressionLevel / 100;
+                    const convertedDataUrl = canvas.toDataURL(mimeType, quality);
+
+                    // Display the converted image
+                    document.getElementById('convertedImage').src = convertedDataUrl;
+                    document.getElementById('downloadLink').href = convertedDataUrl;
+                    document.getElementById('downloadLink').download = `converted_image.${format}`;
+                    document.getElementById('result').classList.remove('hidden');
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
